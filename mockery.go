@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/vektra/mockery/mockery"
+	"github.com/treetopllc/mockery/mockery"
 )
 
 var fName = flag.String("name", "", "name of interface to generate mock for")
@@ -153,6 +153,7 @@ func genMock(iface *mockery.Interface) {
 
 	var out io.Writer
 
+	pkg := "mocks"
 	name := iface.Name
 	caseName := iface.Name
 	if *fCase == "underscore" {
@@ -170,6 +171,7 @@ func genMock(iface *mockery.Interface) {
 		} else {
 			path = filepath.Join(*fOutput, caseName+".go")
 			os.MkdirAll(filepath.Dir(path), 0755)
+			pkg = filepath.Base(filepath.Dir(path))
 		}
 
 		f, err := os.Create(path)
@@ -190,7 +192,7 @@ func genMock(iface *mockery.Interface) {
 	if *fIP {
 		gen.GenerateIPPrologue()
 	} else {
-		gen.GeneratePrologue()
+		gen.GeneratePrologue(pkg)
 	}
 
 	err := gen.Generate()
